@@ -1,5 +1,6 @@
 package com.ecommerce.project.payload;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDTO {
-    private Long categoryId;
-    private String categoryName;
+public class APIResponse {
+    public String message;
+    private boolean status;
 }
