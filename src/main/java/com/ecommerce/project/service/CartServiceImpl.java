@@ -10,12 +10,15 @@ import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.repositories.CartItemRepository;
 import com.ecommerce.project.repositories.CartRepository;
 import com.ecommerce.project.repositories.ProductRepository;
+import com.ecommerce.project.utils.AuthUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Stream;
 
+@Service
 public class CartServiceImpl implements CartService{
 
     @Autowired
@@ -39,7 +42,7 @@ public class CartServiceImpl implements CartService{
 
         Product product = productRepository
                 .findById(productId)
-                .orElseThrow() -> new ResourceNotFoundException("Product", "productId", productId));
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "productId", productId));
 
         CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cart.getCartId(),productId);
         if (cartItem != null){
@@ -52,7 +55,7 @@ public class CartServiceImpl implements CartService{
         }
 
 
-        if (product.getQuantity() < quantity{
+        if (product.getQuantity() < quantity){
             throw new APIException("Please, make an order of the " + product.getProductName() + " less than or equal to the quantity" + product.getQuantity() + ".");
         }
 
@@ -79,7 +82,7 @@ public class CartServiceImpl implements CartService{
         Stream<ProductDTO> productDTOStream = cartItems.stream().map(item ->{
             ProductDTO map = modelMapper.map(item.getProduct(), ProductDTO.class);
             map.setQuantity(item.getQuantity());
-
+            return map;
         });
 
         cartDTO.setProducts(productDTOStream.toList());
@@ -89,7 +92,7 @@ public class CartServiceImpl implements CartService{
     }
 
     private Cart createCart(){
-        Cart userCart = cartRepository.findCartByEmail(authUtil.loggedInEmail)
+        Cart userCart = cartRepository.findCartByEmail(authUtil.loggedInEmail());
         if (userCart != null){
             return userCart;
         }
