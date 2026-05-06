@@ -6,10 +6,15 @@ import com.ecommerce.project.model.Cart;
 import com.ecommerce.project.model.CartItem;
 import com.ecommerce.project.model.Product;
 import com.ecommerce.project.payload.CartDTO;
+import com.ecommerce.project.payload.ProductDTO;
 import com.ecommerce.project.repositories.CartItemRepository;
 import com.ecommerce.project.repositories.CartRepository;
 import com.ecommerce.project.repositories.ProductRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 public class CartServiceImpl implements CartService{
 
@@ -21,6 +26,9 @@ public class CartServiceImpl implements CartService{
 
     @Autowired
     CartItemRepository cartItemRepository;
+
+    @Autowired
+    ModelMapper modelMapper;
 
     @Autowired
     AuthUtil authUtil;
@@ -50,16 +58,38 @@ public class CartServiceImpl implements CartService{
 
 
 
-//Retrieve Product Details
-        //Perform Validations
-        //Create Cart Item
-        //Save Cart Item
-        //Return updated cart
-        return null;
+        CartItem newCartItem = new CartItem();
+
+        newCartItem.setProduct(product);
+        newCartItem.setQuantity(quantity);
+        newCartItem.setCart(cart);
+        newCartItem.setDiscount(product.getDiscount());
+        newCartItem.setProductPrice(product.getSpecialPrice());
+
+        cartItemRepository.save(newCartItem);
+        product.setQuantity(product.getQuantity());
+
+        cart.setTotalPrice(cart.getTotalPrice() + (product.getSpecialPrice() * quantity));
+
+        cartRepository.save(cart);
+
+        CartDTO cartDTO = modelMapper.map(cart, CartDTO.class);
+
+        List<CartItem> cartItems = cart.getCartItems();
+        Stream<ProductDTO> productDTOStream = cartItems.stream().map(item ->{
+            ProductDTO map = modelMapper.map(item.getProduct(), ProductDTO.class);
+            map.setQuantity(item.getQuantity());
+
+        });
+
+        cartDTO.setProducts(productDTOStream.toList());
+
+
+        return cartDTO;
     }
 
     private Cart createCart(){
-        Cart userCart = cartRepository.findCartByEmail(authUtil.loggedInEmail )
+        Cart userCart = cartRepository.findCartByEmail(authUtil.loggedInEmail)
         if (userCart != null){
             return userCart;
         }

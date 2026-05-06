@@ -32,4 +32,7 @@ public class CartItem {
     private Integer quantity;
     private double discount;
     private double productPrice;
+
+    public void setP0() {
+    }
 }
