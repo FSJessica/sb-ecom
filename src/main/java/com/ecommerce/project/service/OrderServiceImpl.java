@@ -18,15 +18,15 @@ import com.ecommerce.project.repositories.OrderRepository;
 import com.ecommerce.project.repositories.PaymentRepository;
 import com.ecommerce.project.repositories.ProductRepository;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
+@Service
 public class OrderServiceImpl implements OrderService{
     @Autowired
     CartRepository cartRepository;
